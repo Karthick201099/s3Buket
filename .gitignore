@@ -1,0 +1,19 @@
+# Dependency directories
+node_modules/
+# Build output
+dist/
+# Test coverage reports
+coverage/
+# Environment variables
+.env
+.env.production
+# IDE/Editor specific files
+.vscode/
+.idea/
+# Log files
+*.log
+# Mac OS specific files
+.DS_Store
+# Windows specific files
+Thumbs.db
+.env
