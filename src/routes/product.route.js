@@ -1,28 +1,30 @@
 const router = require('express').Router()
-const controller = require('../controller/category.controller')
+const controller = require('../controller/product.controller')
 const catchAsync = require('../utils/catchAsync')
 const decodeJwtMiddleware = require('../middleware/decodeJwtMiddleware')
 const multer = require('multer')
 const upload = multer()
 
-// create category
+// create product
 router.post(
-  '/createCategory',
+  '/createProduct',
   decodeJwtMiddleware,
-  upload.single('categoryURL'),
-  catchAsync(controller.createCategory)
+  decodeJwtMiddleware,
+  upload.array('productURL', 5),
+  catchAsync(controller.createProduct)
 )
-//  get category
+
+// get product
 router.get(
-  '/getCategory',
+  '/getProduct',
   decodeJwtMiddleware,
-  catchAsync(controller.getCategory)
+  catchAsync(controller.getProduct)
 )
-// get category by id
+// get product by id
 router.get(
-  '/getCategory/:id',
+  '/getProduct/:id',
   decodeJwtMiddleware,
-  catchAsync(controller.getCategoryById)
+  catchAsync(controller.getProductById)
 )
 
 module.exports = router

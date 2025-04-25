@@ -2,18 +2,18 @@ const Fresh = require('../model/fresh.model.js')
 const responseHandler = require('../utils/responseHandler.js')
 const CryptoJS = require('crypto-js')
 const { ENCRYPT_SECRET } = require('../config/index.js')
-const { encrypt, hash, decrypt } = require('../utils/encrypt.js')
+const encryptUtils = require('../utils/encrypt.js')
 
 const controller = {}
 
 controller.createFresh = async (req, res) => {
   const { name, email, phone, medical } = req.body
 
-  const encryptedEmail = encrypt(email)
-  const encryptedPhone = encrypt(phone)
-  const encryptedMedical = encrypt(medical)
-  const emailHash = hash(email)
-  const phoneHash = hash(phone)
+  const encryptedEmail = encryptUtils.encrypt(email)
+  const encryptedPhone = encryptUtils.encrypt(phone)
+  const encryptedMedical = encryptUtils.encrypt(medical)
+  const emailHash = encryptUtils.hash(email)
+  const phoneHash = encryptUtils.hash(phone)
 
   const fresh = new Fresh({
     name,
@@ -35,7 +35,7 @@ controller.getFresh = async (req, res) => {
     return responseHandler.badRequest(res, 'Email is required')
   }
 
-  const emailHash = hash(email)
+  const emailHash = encryptUtils.hash(email)
   console.log(emailHash)
   const fresh = await Fresh.findOne({ emailHash: emailHash })
 
@@ -46,12 +46,18 @@ controller.getFresh = async (req, res) => {
 
   const decryptedItem = {
     name: fresh.name,
-    email: decrypt(fresh.email),
-    phone: decrypt(fresh.phone),
-    medical: decrypt(fresh.medical)
+    email: encryptUtils.decrypt(fresh.email),
+    phone: encryptUtils.decrypt(fresh.phone),
+    medical: encryptUtils.decrypt(fresh.medical)
   }
 
-  return responseHandler.ok(res, decryptedItem, 'Fresh fetched successfully')
+  const maskData = {
+    name: decryptedItem.name,
+    email: encryptUtils.maskEmail(decryptedItem.email),
+    phone: encryptUtils.maskPhone(decryptedItem.phone),
+    medical: decryptedItem.medical
+  }
+  return responseHandler.ok(res, maskData, 'Fresh fetched successfully')
 }
 
 controller.getAllFresh = async (req, res) => {
@@ -62,16 +68,20 @@ controller.getAllFresh = async (req, res) => {
   const decryptedFresh = fresh.map((item) => {
     return {
       name: item.name,
-      email: decrypt(item.email),
-      phone: decrypt(item.phone),
-      medical: decrypt(item.medical)
+      email: encryptUtils.decrypt(item.email),
+      phone: encryptUtils.decrypt(item.phone),
+      medical: encryptUtils.decrypt(item.medical)
     }
   })
-  return responseHandler.ok(
-    res,
-    decryptedFresh,
-    'All Fresh fetched successfully'
-  )
+  const maskData = decryptedFresh.map((item) => {
+    return {
+      name: item.name,
+      email: encryptUtils.maskEmail(item.email),
+      phone: encryptUtils.maskPhone(item.phone),
+      medical: item.medical
+    }
+  })
+  return responseHandler.ok(res, maskData, 'All Fresh fetched successfully')
 }
 
 module.exports = controller

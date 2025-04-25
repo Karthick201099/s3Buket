@@ -8,7 +8,11 @@ const categorySchema = new mongoose.Schema(
     categoryName: {
       type: String
     },
-    parentCategory: {
+    slug: {
+      type: String
+    },
+
+    weightUNit: {
       type: String
     },
     date: {
@@ -16,8 +20,17 @@ const categorySchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: 'Active',
-      enum: ['Active', 'Disabled']
+      default: 'active',
+      enum: ['active', 'disabled']
+    },
+    description: {
+      type: String
+    },
+    metaTittle: {
+      type: String
+    },
+    metaDescription: {
+      type: String
     }
   },
   { versionKey: false },

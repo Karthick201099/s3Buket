@@ -6,13 +6,25 @@ const uploadFile = require('../utils/upload')
 const controller = {}
 
 controller.createCategory = async (req, res) => {
-  const { categoryName, parentCategory, status } = req.body
+  const {
+    categoryName,
+    slug,
+    weightUNit,
+    description,
+    metaTittle,
+    metaDescription,
+    status
+  } = req.body
 
   const date = moment().format('YYYY-MM-DD')
 
   const Categories = new Category({
     categoryName,
-    parentCategory,
+    slug,
+    weightUNit,
+    description,
+    metaTittle,
+    metaDescription,
     status,
     date
   })
@@ -38,6 +50,23 @@ controller.createCategory = async (req, res) => {
     saveCategory,
     'Category created successfully'
   )
+}
+
+controller.getCategory = async (req, res) => {
+  const category = await Category.find()
+  if (category.length === 0) {
+    return responseHandler.notFound(res, 'No Category found')
+  }
+  return responseHandler.ok(res, category, 'Category fetched successfully')
+}
+
+controller.getCategoryById = async (req, res) => {
+  const { id } = req.params
+  const category = await Category.findById(id)
+  if (!category) {
+    return responseHandler.notFound(res, 'Category not found')
+  }
+  return responseHandler.ok(res, category, 'Category fetched successfully')
 }
 
 module.exports = controller
