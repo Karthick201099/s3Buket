@@ -17,11 +17,3 @@ module.exports = {
   CLIENT_EMAIL: process.env.CLIENT_EMAIL
 }
 
-
-
-
-
-
-
-
-
